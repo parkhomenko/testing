@@ -2,14 +2,26 @@ package com.hillel.atm;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class BankAccountServiceTest {
 
     BankAccountService bankAccountService;
+
+    @Mock
+    private TransactionRepository repository;
 
     @Rule
     public ExpectedException expectedException =
@@ -29,7 +41,7 @@ public class BankAccountServiceTest {
     public void setUp() {
         System.out.println("Before");
         bankAccountService =
-                new BankAccountService(1000, new MockRepository());
+                new BankAccountService(1000, repository);
     }
 
     @After
@@ -49,10 +61,13 @@ public class BankAccountServiceTest {
 
     @Test
     public void shouldHaveInTotal950WhenWithdraw50() {
+
         bankAccountService.withdrawMoney(50);
 
         assertEquals(950, bankAccountService.getTotalAmount());
         assertThat(bankAccountService.getTotalAmount(), is(950));
+
+        verify(repository, times(1)).addTransaction(any(), anyInt(), anyInt());
     }
 
     @Test

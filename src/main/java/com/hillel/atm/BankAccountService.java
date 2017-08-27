@@ -4,9 +4,9 @@ public class BankAccountService {
 
   private int totalAmount;
   private int limit;
-  private Repository transactionRepository;
+  private TransactionRepository transactionRepository;
 
-  public BankAccountService(int totalAmount, Repository repository) {
+  public BankAccountService(int totalAmount, TransactionRepository repository) {
     this.totalAmount = totalAmount;
     limit = 0;
     transactionRepository = repository;
