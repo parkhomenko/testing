@@ -1,43 +1,31 @@
 package com.hillel.atm;
 
-import java.util.LinkedList;
-import java.util.List;
-
 public class BankAccountService {
 
   private int totalAmount;
-  private int transactionId;
-  private List<Transaction> transactions;
-
   private int limit;
+  private Repository transactionRepository;
 
-  public BankAccountService(int totalAmount) {
+  public BankAccountService(int totalAmount, Repository repository) {
     this.totalAmount = totalAmount;
-    transactionId = 0;
     limit = 0;
-    transactions = new LinkedList<>();
+    transactionRepository = repository;
   }
 
   public void withdrawMoney(int amount) {
-    totalAmount = totalAmount - amount;
-
-    if (totalAmount < 0) {
-      totalAmount = 0;
+    if (totalAmount - amount < 0) {
+      throw new NotEnoughMoneyException("You have not enough money");
     }
 
-    transactionId++;
-    Transaction transaction = new Transaction(transactionId, Operation.WITHDRAWAL, amount,
-        totalAmount);
-    transactions.add(transaction);
+    totalAmount = totalAmount - amount;
+
+    transactionRepository.addTransaction(Operation.WITHDRAWAL, amount, totalAmount);
   }
 
   public void refillMoney(int amount) {
     totalAmount = totalAmount + amount;
 
-    transactionId++;
-    Transaction transaction = new Transaction(transactionId, Operation.REFILL, amount,
-        totalAmount);
-    transactions.add(transaction);
+    transactionRepository.addTransaction(Operation.REFILL, amount, totalAmount);
   }
 
   public int getTotalAmount() {
@@ -52,7 +40,7 @@ public class BankAccountService {
     return totalAmount <= limit;
   }
 
-  public List<Transaction> getTransactions() {
-    return transactions;
+  public int getLimit() {
+    return limit;
   }
 }
